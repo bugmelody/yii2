@@ -135,6 +135,7 @@ class Controller extends Component implements ViewContextInterface
         $this->action = $action;
 
         $modules = [];
+        // 是否要运行 action, 初始化为true,后面会根据 beforeAction 来修改
         $runAction = true;
 
         // call beforeAction on modules
@@ -198,6 +199,7 @@ class Controller extends Component implements ViewContextInterface
      */
     public function bindActionParams($action, $params)
     {
+        // 具体是由子类实现
         return [];
     }
 

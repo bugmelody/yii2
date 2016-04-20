@@ -22,6 +22,17 @@ class Yii extends \yii\BaseYii
 {
 }
 
+/**
+ * 注册 Yii::autoload 到 autoload queue 的前面
+ * autoload_function: The autoload function being registered.
+ * If no parameter is provided, then the default implementation of spl_autoload() will be registered.
+ *
+ * throw: This parameter specifies whether spl_autoload_register() should throw exceptions when the
+ * autoload_function cannot be registered.
+ *
+ * prepend: If true, spl_autoload_register() will prepend the autoloader on the autoload queue instead of appending it.
+ */
+
 spl_autoload_register(['Yii', 'autoload'], true, true);
 Yii::$classMap = require(__DIR__ . '/classes.php');
 Yii::$container = new yii\di\Container();
