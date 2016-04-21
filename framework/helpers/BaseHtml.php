@@ -101,6 +101,7 @@ class BaseHtml
      */
     public static function encode($content, $doubleEncode = true)
     {
+        // http://php.net/manual/en/function.htmlspecialchars.php
         return htmlspecialchars($content, ENT_QUOTES | ENT_SUBSTITUTE, Yii::$app ? Yii::$app->charset : 'UTF-8', $doubleEncode);
     }
 
@@ -138,9 +139,12 @@ class BaseHtml
     public static function tag($name, $content = '', $options = [])
     {
         if ($name === null || $name === false) {
+            // If $name is `null` or `false`, the corresponding content will be rendered without any tag.
             return $content;
         }
         $html = "<$name" . static::renderTagAttributes($options) . '>';
+
+        // 根据是否是单闭合标签,返回不同的内容
         return isset(static::$voidElements[strtolower($name)]) ? $html : "$html$content</$name>";
     }
 

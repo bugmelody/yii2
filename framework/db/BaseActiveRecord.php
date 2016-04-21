@@ -124,7 +124,11 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         $query = static::find();
 
         if (!ArrayHelper::isAssociative($condition)) {
+            // 不是关联数组,说明是主键查询
             // query by primary key
+
+            // static::primaryKey() 是由 BaseActiveRecord的子类 ActiveRecord.php 实现的, 在 ActiveRecordInterface 中定义
+            // 即使是单主键,也会返回数组,这时数组只有一个元素; 如果是复合主键,会返回多个元素
             $primaryKey = static::primaryKey();
             if (isset($primaryKey[0])) {
                 $condition = [$primaryKey[0] => $condition];
@@ -237,6 +241,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     public function __get($name)
     {
         if (isset($this->_attributes[$name]) || array_key_exists($name, $this->_attributes)) {
+            // 这个条件和下个 elseif 有什么区别?
             return $this->_attributes[$name];
         } elseif ($this->hasAttribute($name)) {
             return null;
@@ -244,6 +249,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
             if (isset($this->_related[$name]) || array_key_exists($name, $this->_related)) {
                 return $this->_related[$name];
             }
+            // 实际是调用 \yii\base\Component::__get
             $value = parent::__get($name);
             if ($value instanceof ActiveQueryInterface) {
                 return $this->_related[$name] = $value->findFor($name, $this);
@@ -419,6 +425,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function hasAttribute($name)
     {
+        // $this->_attributes 是在 BaseActiveRecord 中定义的, $this->attributes() 是在 \yii\base\Model::attributes 中定义的
         return isset($this->_attributes[$name]) || in_array($name, $this->attributes());
     }
 
@@ -547,7 +554,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         if ($names === null) {
             $names = $this->attributes();
         }
+        // array_flip — Exchanges all keys with their associated values in an array
         $names = array_flip($names);
+        // 初始化最后要返回的结果
         $attributes = [];
         if ($this->_oldAttributes === null) {
             foreach ($this->_attributes as $name => $value) {
@@ -589,6 +598,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function save($runValidation = true, $attributeNames = null)
     {
+        // update 可能会返回 >0 =0 或者 false, intert 返回 boolean
         if ($this->getIsNewRecord()) {
             return $this->insert($runValidation, $attributeNames);
         } else {
