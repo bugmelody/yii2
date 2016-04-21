@@ -123,6 +123,8 @@ class Query extends Component implements QueryInterface
         if ($db === null) {
             $db = Yii::$app->getDb();
         }
+
+        // build 方法,传入一个 Query, 返回 sql 和绑定参数数组
         list ($sql, $params) = $db->getQueryBuilder()->build($this);
 
         return $db->createCommand($sql, $params);
@@ -137,6 +139,7 @@ class Query extends Component implements QueryInterface
      */
     public function prepare($builder)
     {
+        // 在 framework/db/ActiveQuery.php 中有额外的实现
         return $this;
     }
 
@@ -223,6 +226,7 @@ class Query extends Component implements QueryInterface
         if ($this->indexBy === null) {
             return $rows;
         }
+        // 设置了 indexBy,处理 indexBy
         $result = [];
         foreach ($rows as $row) {
             if (is_string($this->indexBy)) {
@@ -265,6 +269,8 @@ class Query extends Component implements QueryInterface
      * @param Connection $db the database connection used to generate the SQL statement.
      * If this parameter is not given, the `db` application component will be used.
      * @return array the first column of the query result. An empty array is returned if the query results in nothing.
+     * 查看源码得知, column 方法可以结合 select 和 indexBy 使用, 此时会向 select 多加入 indexBy 字段
+     * 比如 $query->select('name')->indexBy('id')->column();
      */
     public function column($db = null)
     {
@@ -272,6 +278,7 @@ class Query extends Component implements QueryInterface
             return $this->createCommand($db)->queryColumn();
         }
         if (is_array($this->select) && count($this->select) === 1) {
+            // 添加新的需要额外 select 的字段
             $this->select[] = $this->indexBy;
         }
         $rows = $this->createCommand($db)->queryAll();
@@ -376,22 +383,27 @@ class Query extends Component implements QueryInterface
      */
     protected function queryScalar($selectExpression, $db)
     {
+        // 记住老的
         $select = $this->select;
         $limit = $this->limit;
         $offset = $this->offset;
 
+        // 设置新的
         $this->select = [$selectExpression];
         $this->limit = null;
         $this->offset = null;
         $command = $this->createCommand($db);
 
+        // 恢复老的
         $this->select = $select;
         $this->limit = $limit;
         $this->offset = $offset;
 
+        // 如果 this 没有设置 groupBy,having,union,distinct, 直接用 $command 来查询
         if (empty($this->groupBy) && empty($this->having) && empty($this->union) && !$this->distinct) {
             return $command->queryScalar();
         } else {
+            // 否则, 新建一个 Query 对象, this 作为子查询, 子查询结果的别名为 c,   见下面的 from 方法定义
             return (new Query)->select([$selectExpression])
                 ->from(['c' => $this])
                 ->createCommand($command->db)

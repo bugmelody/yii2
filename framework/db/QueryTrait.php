@@ -156,8 +156,10 @@ trait QueryTrait
      */
     public function filterWhere(array $condition)
     {
+        // $this->filterCondition($condition):: Removes [[isEmpty()|empty operands]] from the given query condition
         $condition = $this->filterCondition($condition);
         if ($condition !== []) {
+            // 通过这个条件判断,就实现了 empty 的条件不进入 where
             $this->where($condition);
         }
         return $this;
@@ -342,6 +344,7 @@ trait QueryTrait
     }
 
     /**
+     * 统一转化为数组
      * Normalizes format of ORDER BY data
      *
      * @param array|string|Expression $columns the columns value to normalize. See [[orderBy]] and [[addOrderBy]].
@@ -350,6 +353,7 @@ trait QueryTrait
     protected function normalizeOrderBy($columns)
     {
         if ($columns instanceof Expression) {
+            // 原封不动返回, Expression::__toString 这个方法以后会被调用
             return [$columns];
         } elseif (is_array($columns)) {
             return $columns;

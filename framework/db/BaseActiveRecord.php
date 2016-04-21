@@ -686,21 +686,26 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         $attrs = [];
         foreach ($attributes as $name => $value) {
             if (is_int($name)) {
+                // 此时, $value 代表要更新的列名, $name 没有意义
                 $attrs[] = $value;
             } else {
+                // 此时, $name 代表要更新的列名, $value 代表要更新 $name 为 $value
                 $this->$name = $value;
                 $attrs[] = $name;
             }
         }
 
+        // getDirtyAttributes 返回一个数组,代表 the changed attribute values (name-value pairs)
         $values = $this->getDirtyAttributes($attrs);
         if (empty($values)) {
+            // DirtyAttributes 为空, 没有需要更新的列
             return 0;
         }
 
         $rows = static::updateAll($values, $this->getOldPrimaryKey(true));
 
         foreach ($values as $name => $value) {
+            // 同步 $this->_oldAttributes 的更新
             $this->_oldAttributes[$name] = $this->_attributes[$name];
         }
 
@@ -726,7 +731,9 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         $condition = $this->getOldPrimaryKey(true);
         $lock = $this->optimisticLock();
         if ($lock !== null) {
+            // 需要同时更新表的版本字段
             $values[$lock] = $this->$lock + 1;
+            // 需要设置版本字段的查询条件
             $condition[$lock] = $this->$lock;
         }
         // We do not check the return value of updateAll() because it's possible
@@ -969,8 +976,10 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         /* @var $record BaseActiveRecord */
         $record = static::findOne($this->getPrimaryKey(true));
         if ($record === null) {
+            // 已经不在数据库中了
             return false;
         }
+        // 还存在
         foreach ($this->attributes() as $name) {
             $this->_attributes[$name] = isset($record->_attributes[$name]) ? $record->_attributes[$name] : null;
         }
@@ -1010,6 +1019,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function getPrimaryKey($asArray = false)
     {
+        // $this->primaryKey() 永远返回的是数组, 比如 [primary_key]
         $keys = $this->primaryKey();
         if (!$asArray && count($keys) === 1) {
             return isset($this->_attributes[$keys[0]]) ? $this->_attributes[$keys[0]] : null;
@@ -1099,6 +1109,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public static function instantiate($row)
     {
+        // 比如说通过 $row 中的 type 字段,实例化不同的类实现单表继承
         return new static;
     }
 
@@ -1110,6 +1121,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
      */
     public function offsetExists($offset)
     {
+        // ArrayAccess 接口是父类 Model 中声明的
         return $this->__isset($offset);
     }
 
@@ -1147,6 +1159,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
         if (method_exists($this, $getter)) {
             // relation name is case sensitive, trying to validate it when the relation is defined within this class
             $method = new \ReflectionMethod($this, $getter);
+            // lcfirst: 首字母小写
             $realName = lcfirst(substr($method->getName(), 3));
             if ($realName !== $name) {
                 if ($throwException) {

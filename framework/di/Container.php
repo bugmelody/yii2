@@ -242,6 +242,7 @@ class Container extends Component
      *   values of the newly created object when [[get()]] is called. The `class` element stands for the
      *   the class of the object to be created. If `class` is not specified, `$class` will be used as the class name.
      * - a string: a class name, an interface name or an alias name.
+     *       - 此时设置了依赖链
      * @param array $params the list of constructor parameters. The parameters will be passed to the class
      * constructor when [[get()]] is called.
      * @return $this the container itself

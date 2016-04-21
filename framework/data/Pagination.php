@@ -30,6 +30,7 @@ use yii\web\Request;
  * function actionIndex()
  * {
  *     $query = Article::find()->where(['status' => 1]);
+ *     // 注意这里使用了 clone 避免写重复的查询
  *     $countQuery = clone $query;
  *     $pages = new Pagination(['totalCount' => $countQuery->count()]);
  *     $models = $query->offset($pages->offset)
@@ -144,12 +145,14 @@ class Pagination extends Object implements Linkable
 
 
     /**
+     * 总共多少页
      * @return integer number of pages
      */
     public function getPageCount()
     {
         $pageSize = $this->getPageSize();
         if ($pageSize < 1) {
+            // $pageSize 小于 1 表示一页展示所有数据, 如果没有数据,返回页数为 0
             return $this->totalCount > 0 ? 1 : 0;
         } else {
             $totalCount = $this->totalCount < 0 ? 0 : (int) $this->totalCount;
@@ -184,16 +187,20 @@ class Pagination extends Object implements Linkable
     public function setPage($value, $validatePage = false)
     {
         if ($value === null) {
+            // 清空 _page
             $this->_page = null;
         } else {
             $value = (int) $value;
+            // in order to validate the page number, both [[validatePage]] and this parameter must be true.
             if ($validatePage && $this->validatePage) {
                 $pageCount = $this->getPageCount();
                 if ($value >= $pageCount) {
+                    // 超出最大页数,修正
                     $value = $pageCount - 1;
                 }
             }
             if ($value < 0) {
+                // 小于最小页数 0,修正
                 $value = 0;
             }
             $this->_page = $value;
@@ -201,6 +208,7 @@ class Pagination extends Object implements Linkable
     }
 
     /**
+     * 每页多少个
      * Returns the number of items per page.
      * By default, this method will try to determine the page size by [[pageSizeParam]] in [[params]].
      * If the page size cannot be determined this way, [[defaultPageSize]] will be returned.
@@ -258,6 +266,7 @@ class Pagination extends Object implements Linkable
     {
         $page = (int) $page;
         $pageSize = (int) $pageSize;
+        // $params 是最后 createUrl 的参数,下面开始一系列的构造过程
         if (($params = $this->params) === null) {
             $request = Yii::$app->getRequest();
             $params = $request instanceof Request ? $request->getQueryParams() : [];
@@ -276,6 +285,7 @@ class Pagination extends Object implements Linkable
             unset($params[$this->pageSizeParam]);
         }
         $params[0] = $this->route === null ? Yii::$app->controller->getRoute() : $this->route;
+        // $params 构造完毕,开始调用 $urlManager 创建
         $urlManager = $this->urlManager === null ? Yii::$app->getUrlManager() : $this->urlManager;
         if ($absolute) {
             return $urlManager->createAbsoluteUrl($params);
@@ -291,7 +301,7 @@ class Pagination extends Object implements Linkable
     public function getOffset()
     {
         $pageSize = $this->getPageSize();
-
+        // $pageSize < 1 : 表示要单页展示所有数据
         return $pageSize < 1 ? 0 : $this->getPage() * $pageSize;
     }
 
@@ -303,11 +313,12 @@ class Pagination extends Object implements Linkable
     public function getLimit()
     {
         $pageSize = $this->getPageSize();
-
+        // $pageSize < 1 : 表示要单页展示所有数据
         return $pageSize < 1 ? -1 : $pageSize;
     }
 
     /**
+     * 实现 Linkable 接口
      * Returns a whole set of links for navigating to the first, last, next and previous pages.
      * @param boolean $absolute whether the generated URLs should be absolute.
      * @return array the links for navigational purpose. The array keys specify the purpose of the links (e.g. [[LINK_FIRST]]),
@@ -321,10 +332,12 @@ class Pagination extends Object implements Linkable
             Link::REL_SELF => $this->createUrl($currentPage, null, $absolute),
         ];
         if ($currentPage > 0) {
+            // 非首页情况
             $links[self::LINK_FIRST] = $this->createUrl(0, null, $absolute);
             $links[self::LINK_PREV] = $this->createUrl($currentPage - 1, null, $absolute);
         }
         if ($currentPage < $pageCount - 1) {
+            // 非末页情况
             $links[self::LINK_NEXT] = $this->createUrl($currentPage + 1, null, $absolute);
             $links[self::LINK_LAST] = $this->createUrl($pageCount - 1, null, $absolute);
         }

@@ -10,6 +10,8 @@ namespace yii\di;
 use Yii;
 use yii\base\InvalidConfigException;
 
+// 这个类在 \yii\di\Container::getDependencies 获取依赖的时候被调用
+
 /**
  * Instance represents a reference to a named object in a dependency injection (DI) container or a service locator.
  *
