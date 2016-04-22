@@ -79,29 +79,43 @@ class ErrorAction extends Action
             $exception = new HttpException(404, Yii::t('yii', 'Page not found.'));
         }
 
+        // 计算code
         if ($exception instanceof HttpException) {
+            // 如果是 HttpException, code 设置为 http 状态
             $code = $exception->statusCode;
         } else {
+            // 否则, code 设置为 $exception 的 code
             $code = $exception->getCode();
         }
+
+
         if ($exception instanceof Exception) {
+            // 如果是 \yii\base\Exception, 说明是框架本身抛出的异常
             $name = $exception->getName();
         } else {
+            // 否则,不是框架本身抛出的异常,是php的本身异常,可能包含敏感信息,因此使用 $this->defaultName 避免敏感信息暴露
             $name = $this->defaultName ?: Yii::t('yii', 'Error');
         }
+
         if ($code) {
+            // 将 code 附加到 name 中
             $name .= " (#$code)";
         }
 
+        // 计算 $message
         if ($exception instanceof UserException) {
+            // 如果是用户造成的异常,属于非敏感信息
             $message = $exception->getMessage();
         } else {
+            // 否则,可能包含敏感信息
             $message = $this->defaultMessage ?: Yii::t('yii', 'An internal server error occurred.');
         }
 
         if (Yii::$app->getRequest()->getIsAjax()) {
+            // 如果是 ajax 请求,直接返回字符串
             return "$name: $message";
         } else {
+            // 否则,调用 render 进行模板渲染
             return $this->controller->render($this->view ?: $this->id, [
                 'name' => $name,
                 'message' => $message,
