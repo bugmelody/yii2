@@ -228,6 +228,7 @@ class BaseHtml
      */
     public static function cssFile($url, $options = [])
     {
+        // $options['rel'] 默认值为 stylesheet
         if (!isset($options['rel'])) {
             $options['rel'] = 'stylesheet';
         }
@@ -330,6 +331,7 @@ class BaseHtml
         $request = Yii::$app->getRequest();
         if ($request instanceof Request) {
             if (strcasecmp($method, 'get') && strcasecmp($method, 'post')) {
+                // 如果不是 get 和 post 表单,需要通过 hiddenInput 虚拟对应的方法
                 // simulate PUT, DELETE, etc. via POST
                 $hiddenInputs[] = static::hiddenInput($request->methodParam, $method);
                 $method = 'post';
@@ -337,23 +339,29 @@ class BaseHtml
             $csrf = ArrayHelper::remove($options, 'csrf', true);
 
             if ($csrf && $request->enableCsrfValidation && strcasecmp($method, 'post') === 0) {
+                // 如果 $options 设置了 csrf,并且 $request 启用了 csrf 验证,并且是post提交, 需要添加 csrf 表单隐藏域
                 $hiddenInputs[] = static::hiddenInput($request->csrfParam, $request->getCsrfToken());
             }
         }
 
         if (!strcasecmp($method, 'get') && ($pos = strpos($action, '?')) !== false) {
+            // 如果是get请求,并且url中包含querystring,将query string转换为表单隐藏域进行提交
             // query parameters in the action are ignored for GET method
             // we use hidden fields to add them back
             foreach (explode('&', substr($action, $pos + 1)) as $pair) {
+                // pos1代表等号左侧的位置
                 if (($pos1 = strpos($pair, '=')) !== false) {
+                    // 如果找到等号
                     $hiddenInputs[] = static::hiddenInput(
                         urldecode(substr($pair, 0, $pos1)),
                         urldecode(substr($pair, $pos1 + 1))
                     );
                 } else {
+                    // 如果没有找到等号
                     $hiddenInputs[] = static::hiddenInput(urldecode($pair), '');
                 }
             }
+            // 修正 $action
             $action = substr($action, 0, $pos);
         }
 
@@ -439,6 +447,7 @@ class BaseHtml
     public static function img($src, $options = [])
     {
         $options['src'] = Url::to($src);
+        // 确保 alt 属性存在
         if (!isset($options['alt'])) {
             $options['alt'] = '';
         }
@@ -477,6 +486,7 @@ class BaseHtml
      */
     public static function button($content = 'Button', $options = [])
     {
+        // 默认 type 为 button
         if (!isset($options['type'])) {
             $options['type'] = 'button';
         }

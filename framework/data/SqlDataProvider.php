@@ -100,6 +100,7 @@ class SqlDataProvider extends BaseDataProvider
     }
 
     /**
+     * 见父类,此方法需要返回本页的数据
      * @inheritdoc
      */
     protected function prepareModels()
@@ -107,9 +108,11 @@ class SqlDataProvider extends BaseDataProvider
         $sort = $this->getSort();
         $pagination = $this->getPagination();
         if ($pagination === false && $sort === false) {
+            // 没有配置分页对象,也没有配置sort对象,本页数据无需设置order by, limit等
             return $this->db->createCommand($this->sql, $this->params)->queryAll();
         }
 
+        // 后面需要修改 $sql
         $sql = $this->sql;
         $orders = [];
         $limit = $offset = null;
@@ -118,7 +121,11 @@ class SqlDataProvider extends BaseDataProvider
             $orders = $sort->getOrders();
             $pattern = '/\s+order\s+by\s+([\w\s,\.]+)$/i';
             if (preg_match($pattern, $sql, $matches)) {
+                // $sql之前被设置为$this->sql,它可能已经包含了order by,这里将$sql中的order by统一搞
+                // 到$orders数组中,并清理掉$sql中的order by
                 array_unshift($orders, new Expression($matches[1]));
+                // 现在 $orders 中包含了 $sort->getOrders() 中的数据,和$sql中搞过来的数据
+                // 统一$sql不含order
                 $sql = preg_replace($pattern, '', $sql);
             }
         }
@@ -140,6 +147,7 @@ class SqlDataProvider extends BaseDataProvider
     protected function prepareKeys($models)
     {
         $keys = [];
+        // 参见本类中对$this->key的说明
         if ($this->key !== null) {
             foreach ($models as $model) {
                 if (is_string($this->key)) {
@@ -160,6 +168,7 @@ class SqlDataProvider extends BaseDataProvider
      */
     protected function prepareTotalCount()
     {
+        // ???
         return 0;
     }
 }

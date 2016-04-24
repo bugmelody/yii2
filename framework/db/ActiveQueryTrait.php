@@ -81,7 +81,10 @@ trait ActiveQueryTrait
      */
     public function with()
     {
+        // 将 $with 设置为函数参数
         $with = func_get_args();
+
+        // 如果用户传递的是数组,修正 $with
         if (isset($with[0]) && is_array($with[0])) {
             // the parameter is given as an array
             $with = $with[0];
@@ -92,9 +95,11 @@ trait ActiveQueryTrait
         } elseif (!empty($with)) {
             foreach ($with as $name => $value) {
                 if (is_int($name)) {
+                    // 如果 $name 是整数,说明 $value 是字符串,比如此时 $value 为 'country'
                     // repeating relation is fine as normalizeRelations() handle it well
                     $this->with[] = $value;
                 } else {
+                    // 否则, $name 是 relation names, $value 是 the optional callbacks
                     $this->with[$name] = $value;
                 }
             }
@@ -112,9 +117,12 @@ trait ActiveQueryTrait
     {
         $models = [];
         if ($this->asArray) {
+            // 如果设置为要转为数组
             if ($this->indexBy === null) {
+                // 如果没有设置 indexBy,则直接返回 $rows
                 return $rows;
             }
+            // 否则,设置了 indexBy
             foreach ($rows as $row) {
                 if (is_string($this->indexBy)) {
                     $key = $row[$this->indexBy];
@@ -124,11 +132,15 @@ trait ActiveQueryTrait
                 $models[$key] = $row;
             }
         } else {
+            // 需要转换为ActiveRecord,根据modelClass创建对象数组
             /* @var $class ActiveRecord */
             $class = $this->modelClass;
             if ($this->indexBy === null) {
                 foreach ($rows as $row) {
+                    // 这里的 $class::instantiate,实际是调用BaseActiveRecord::instantiate, 当然$class也可能定义自己的实现覆盖掉父类的 instantiate 方法
                     $model = $class::instantiate($row);
+                    // $class::instantiate($row)出来的结果不一定就是$class类型的对象,比如在instantiate方法实现中,返回了其他类型的类(数据库单表继承)
+                    // 这里需要用 get_class 获取 $model 的实际类型
                     $modelClass = get_class($model);
                     $modelClass::populateRecord($model, $row);
                     $models[] = $model;
@@ -181,7 +193,9 @@ trait ActiveQueryTrait
      */
     private function normalizeRelations($model, $with)
     {
+        // 最后要返回的数组
         $relations = [];
+
         foreach ($with as $name => $callback) {
             if (is_int($name)) {
                 $name = $callback;

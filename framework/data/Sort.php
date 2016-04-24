@@ -183,16 +183,23 @@ class Sort extends Object
         $attributes = [];
         foreach ($this->attributes as $name => $attribute) {
             if (!is_array($attribute)) {
+                // 如果不是数组,比如上面例子中的 age, 此时 $name 是数字,没有意义, $attribute 是 'age'
+                // 下面将 'age' 转化为 'age' => ['asc'=> ['age'=> SORT_ASC], 'desc'=>['age'=>SORT_DESC]]
                 $attributes[$attribute] = [
                     'asc' => [$attribute => SORT_ASC],
                     'desc' => [$attribute => SORT_DESC],
                 ];
             } elseif (!isset($attribute['asc'], $attribute['desc'])) {
+                // isset : If multiple parameters are supplied then isset() will return TRUE only if all of the
+                // parameters are set. Evaluation goes from left to right and stops as soon as an unset variable
+                // is encountered.
+                // 如果是数组并且 asc 或者 desc 之一没有设置
                 $attributes[$name] = array_merge([
                     'asc' => [$name => SORT_ASC],
                     'desc' => [$name => SORT_DESC],
                 ], $attribute);
             } else {
+                // 如果是数组并且 asc 和 desc 都设置了
                 $attributes[$name] = $attribute;
             }
         }
