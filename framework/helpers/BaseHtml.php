@@ -935,10 +935,15 @@ class BaseHtml
         // 当前处理到第几个checkbox
         $index = 0;
         foreach ($items as $value => $label) {
+            // 计算 $checked
+            // 如果设置了$selection并且不是Traversable,说明$selection,根据$value和$selection是否相等设置$checked
+            // 或者$selection是Traversable,根据$value是否在$selection中设置$checked
             $checked = $selection !== null &&
                 (!ArrayHelper::isTraversable($selection) && !strcmp($value, $selection)
                     || ArrayHelper::isTraversable($selection) && ArrayHelper::isIn($value, $selection));
+
             if ($formatter !== null) {
+                // $formatter 上面被设置为$options的item元素,是callback
                 $lines[] = call_user_func($formatter, $index, $label, $name, $checked, $value);
             } else {
                 $lines[] = static::checkbox($name, $checked, array_merge($itemOptions, [
@@ -948,7 +953,9 @@ class BaseHtml
             }
             $index++;
         }
+        // $lines 计算完毕
 
+        // 通过$options['unselect']的设置计算$hidden
         if (isset($options['unselect'])) {
             // add a hidden field so that if the list box has no option being selected, it still submits a value
             $name2 = substr($name, -2) === '[]' ? substr($name, 0, -2) : $name;
@@ -967,7 +974,7 @@ class BaseHtml
         return $hidden . static::tag($tag, $visibleContent, $options);
     }
 
-    /**
+    /**到此
      * Generates a list of radio buttons.
      * A radio button list is like a checkbox list, except that it only allows single selection.
      * @param string $name the name attribute of each radio button.

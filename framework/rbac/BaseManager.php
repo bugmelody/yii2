@@ -184,6 +184,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      */
     public function getRoles()
     {
+        // $this->getItems 是由子类实现的
         return $this->getItems(Item::TYPE_ROLE);
     }
 
@@ -192,6 +193,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      */
     public function getPermissions()
     {
+        // $this->getItems 是由子类实现的
         return $this->getItems(Item::TYPE_PERMISSION);
     }
 
@@ -211,8 +213,11 @@ abstract class BaseManager extends Component implements ManagerInterface
     protected function executeRule($user, $item, $params)
     {
         if ($item->ruleName === null) {
+            // If the item does not specify a rule, this method will return true
             return true;
         }
+
+        // Otherwise, it will return the value of [[Rule::execute()]].
         $rule = $this->getRule($item->ruleName);
         if ($rule instanceof Rule) {
             return $rule->execute($user, $item, $params);

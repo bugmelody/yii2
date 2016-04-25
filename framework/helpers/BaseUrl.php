@@ -94,6 +94,8 @@ class BaseUrl
      */
     public static function toRoute($route, $scheme = false)
     {
+        // http://php.net/manual/en/language.types.array.php , Converting to array
+        // 这里统一 $route 为数组进行处理
         $route = (array) $route;
         $route[0] = static::normalizeRoute($route[0]);
 
@@ -138,6 +140,8 @@ class BaseUrl
 
         if (strpos($route, '/') === false) {
             // empty or an action ID
+            // If the route is an empty string, the current [[\yii\web\Controller::route|route]] will be used;
+            // 否则,prefix with controller->getUniqueId()
             return $route === '' ? Yii::$app->controller->getRoute() : Yii::$app->controller->getUniqueId() . '/' . $route;
         } else {
             // relative to module
@@ -205,15 +209,20 @@ class BaseUrl
      */
     public static function to($url = '', $scheme = false)
     {
+        // 如果$url是数组,交给toRoute进行处理
         if (is_array($url)) {
             return static::toRoute($url, $scheme);
         }
 
+        // 现在 $url不是数组,是字符串
         $url = Yii::getAlias($url);
+
+        // an empty string: the currently requested URL will be returned;
         if ($url === '') {
             $url = Yii::$app->getRequest()->getUrl();
         }
 
+        // - `false` (default): generating a relative URL.
         if (!$scheme) {
             return $url;
         }
@@ -305,6 +314,7 @@ class BaseUrl
      * ```
      *
      * @return string the canonical URL of the currently requested page
+     * http://www.dreamdu.com/xhtml/rel_canonical/
      */
     public static function canonical()
     {

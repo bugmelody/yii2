@@ -159,13 +159,17 @@ class SluggableBehavior extends AttributeBehavior
     protected function isNewSlugNeeded()
     {
         if (empty($this->owner->{$this->slugAttribute})) {
+            // 如果 owner->slug 没有设置
             return true;
         }
 
+        // 现在,owner->slug已经设置
         if ($this->immutable) {
+            // 如果设置为更新时候不更新slug
             return false;
         }
 
+        // 现在,循环$this->attribute,任何一个有变化,说明需要更新slug
         foreach ((array)$this->attribute as $attribute) {
             if ($this->owner->isAttributeChanged($attribute)) {
                 return true;
@@ -224,6 +228,7 @@ class SluggableBehavior extends AttributeBehavior
             $this->uniqueValidator
         ));
 
+        // clone 一个出来仅仅用于验证,避免影响本来的 model
         $model = clone $this->owner;
         $model->clearErrors();
         $model->{$this->slugAttribute} = $slug;

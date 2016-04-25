@@ -198,6 +198,7 @@ class DbManager extends BaseManager
         }
 
         $query = new Query;
+        // 查询出 $itemName 所有的 parents
         $parents = $query->select(['parent'])
             ->from($this->itemChildTable)
             ->where(['child' => $itemName])
@@ -220,15 +221,19 @@ class DbManager extends BaseManager
             return null;
         }
 
+        // 如果之前已经计算过了,直接返回
         if (!empty($this->items[$name])) {
             return $this->items[$name];
         }
+        // 没有算过,需要从数据库查询
 
+        // name 是 itemTable 的主键
         $row = (new Query)->from($this->itemTable)
             ->where(['name' => $name])
             ->one($this->db);
 
         if ($row === false) {
+            // item 不存在
             return null;
         }
 
@@ -758,6 +763,9 @@ class DbManager extends BaseManager
             ->select(['name', 'type', 'description', 'rule_name', 'data', 'created_at', 'updated_at'])
             ->from([$this->itemTable, $this->itemChildTable])
             ->where(['parent' => $name, 'name' => new Expression('[[child]]')]);
+        // ->where(['parent' => $name, 'name' => new Expression('[[child]]')])
+        // 相当于是 where parent = '$name' and name = $this->itemChildTable.child
+        // 因为 [[child]] 是两个中括号保卫,代表列名
 
         $children = [];
         foreach ($query->all($this->db) as $row) {

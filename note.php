@@ -503,15 +503,25 @@ framework/data/DataProviderInterface.php
 framework/data/BaseDataProvider.php
 framework/db/ActiveQueryInterface.php
 framework/db/ActiveQueryTrait.php
-
-
+framework/helpers/BaseUrl.php
+framework/db/BatchQueryResult.php
+framework/behaviors/AttributeBehavior.php
+framework/behaviors/BlameableBehavior.php
+framework/behaviors/SluggableBehavior.php
+framework/behaviors/TimestampBehavior.php
+framework/rbac/ManagerInterface.php
+framework/rbac/Rule.php
+framework/rbac/Item.php
+framework/rbac/Permission.php
+framework/rbac/Role.php
+framework/rbac/Assignment.php
+framework/rbac/BaseManager.php
+framework/rbac/DbManager.php
 
 
 
 
 /yii2/framework/db/ActiveRelationTrait.php
-
-
 yii2-master/framework/validators/Validator.php
 ====================================================
 live templates

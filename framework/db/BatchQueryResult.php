@@ -108,12 +108,15 @@ class BatchQueryResult extends Object implements \Iterator
      */
     public function next()
     {
+        // 如果 (batch数据为null) or (batch数据不为null 但是$this->each配置为一条一条获取) or (本批batch数据已经取完)
         if ($this->_batch === null || !$this->each || $this->each && next($this->_batch) === false) {
+            // 获取下一批batch数据并设置指针
             $this->_batch = $this->fetchData();
             reset($this->_batch);
         }
 
         if ($this->each) {
+            // 如果设置为一条条获取
             $this->_value = current($this->_batch);
             if ($this->query->indexBy !== null) {
                 $this->_key = key($this->_batch);
@@ -123,6 +126,7 @@ class BatchQueryResult extends Object implements \Iterator
                 $this->_key = null;
             }
         } else {
+            // 如果设置为一批批获取
             $this->_value = $this->_batch;
             $this->_key = $this->_key === null ? 0 : $this->_key + 1;
         }
