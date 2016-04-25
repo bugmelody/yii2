@@ -746,8 +746,12 @@ class BaseHtml
      */
     public static function checkbox($name, $checked = false, $options = [])
     {
+        // 是否选中
         $options['checked'] = (bool) $checked;
+        // checkbox的value属性
         $value = array_key_exists('value', $options) ? $options['value'] : '1';
+
+        // 未选中的时候是否要生成hidden
         if (isset($options['uncheck'])) {
             // add a hidden field so that if the checkbox is not selected, it still submits a value
             $hidden = static::hiddenInput($name, $options['uncheck']);
@@ -755,6 +759,8 @@ class BaseHtml
         } else {
             $hidden = '';
         }
+
+        // 根据是否需要用label包裹,生成不同的html
         if (isset($options['label'])) {
             $label = $options['label'];
             $labelOptions = isset($options['labelOptions']) ? $options['labelOptions'] : [];
@@ -924,7 +930,9 @@ class BaseHtml
         $separator = ArrayHelper::remove($options, 'separator', "\n");
         $tag = ArrayHelper::remove($options, 'tag', 'div');
 
+        // 最终要生成的checkbox数组,后面会调用implode分割
         $lines = [];
+        // 当前处理到第几个checkbox
         $index = 0;
         foreach ($items as $value => $label) {
             $checked = $selection !== null &&
