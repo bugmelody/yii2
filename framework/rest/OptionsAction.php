@@ -14,6 +14,7 @@ use Yii;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
+ * OPTIONS:用于获取当前URL所支持的方法。若请求成功，则它会在HTTP头中包含一个名为“Allow”的头，值是所支持的方法，
  */
 class OptionsAction extends \yii\base\Action
 {
@@ -34,6 +35,7 @@ class OptionsAction extends \yii\base\Action
     public function run($id = null)
     {
         if (Yii::$app->getRequest()->getMethod() !== 'OPTIONS') {
+            // 405(方法禁用)禁用请求中指定的方法
             Yii::$app->getResponse()->setStatusCode(405);
         }
         $options = $id === null ? $this->collectionOptions : $this->resourceOptions;

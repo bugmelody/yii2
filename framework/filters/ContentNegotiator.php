@@ -170,6 +170,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     protected function negotiateContentType($request, $response)
     {
+        // 从GET参数中处理
         if (!empty($this->formatParam) && ($format = $request->get($this->formatParam)) !== null) {
             if (in_array($format, $this->formats)) {
                 $response->format = $format;
@@ -181,6 +182,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
             }
         }
 
+        // 从Accept头部处理
         $types = $request->getAcceptableContentTypes();
         if (empty($types)) {
             $types['*/*'] = [];
@@ -215,6 +217,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     protected function negotiateLanguage($request)
     {
+        // 处理GET
         if (!empty($this->languageParam) && ($language = $request->get($this->languageParam)) !== null) {
             if (isset($this->languages[$language])) {
                 return $this->languages[$language];
@@ -227,6 +230,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
             return reset($this->languages);
         }
 
+        // 处理 Accept-Language 头部
         foreach ($request->getAcceptableLanguages() as $language) {
             if (isset($this->languages[$language])) {
                 return $this->languages[$language];

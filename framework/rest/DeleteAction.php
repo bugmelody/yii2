@@ -35,6 +35,7 @@ class DeleteAction extends Action
             throw new ServerErrorHttpException('Failed to delete the object for unknown reason.');
         }
 
+        // 204(无内容)服务器成功处理了请求，但没有返回任何内容
         Yii::$app->getResponse()->setStatusCode(204);
     }
 }

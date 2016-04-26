@@ -519,9 +519,27 @@ framework/rbac/BaseManager.php
 framework/rbac/DbManager.php
 framework/widgets/LinkPager.php
 framework/widgets/InputWidget.php
+framework/widgets/LinkSorter.php
+framework/rest/Action.php
+framework/filters/auth/AuthInterface.php
+framework/filters/auth/AuthMethod.php
+framework/filters/auth/HttpBasicAuth.php
+framework/filters/auth/HttpBearerAuth.php
+framework/filters/auth/QueryParamAuth.php
+framework/filters/auth/CompositeAuth.php
+framework/filters/ContentNegotiator.php
+framework/filters/RateLimiter.php
+framework/rest/Controller.php
+framework/rest/CreateAction.php
+framework/rest/DeleteAction.php
+framework/rest/IndexAction.php
+framework/rest/OptionsAction.php
 
 
 
+
+
+/home/qinchuan/code/yii2clone/yii2/framework/rest/Serializer.php
 framework/db/ActiveRelationTrait.php xxxxxx
 yii2-master/framework/validators/Validator.php
 ====================================================
