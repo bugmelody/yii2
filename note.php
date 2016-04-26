@@ -518,9 +518,11 @@ framework/rbac/Assignment.php
 framework/rbac/BaseManager.php
 framework/rbac/DbManager.php
 framework/widgets/LinkPager.php
+framework/widgets/InputWidget.php
+
+
+
 framework/db/ActiveRelationTrait.php xxxxxx
-
-
 yii2-master/framework/validators/Validator.php
 ====================================================
 live templates

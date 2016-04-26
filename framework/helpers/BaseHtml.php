@@ -1042,7 +1042,7 @@ class BaseHtml
         return $hidden . static::tag($tag, $visibleContent, $options);
     }
 
-    /**到此
+    /**
      * Generates an unordered list.
      * @param array|\Traversable $items the items for generating the list. Each item generates a single list item.
      * Note that items will be automatically HTML encoded if `$options['encode']` is not set or true.
@@ -1069,6 +1069,7 @@ class BaseHtml
      */
     public static function ul($items, $options = [])
     {
+        // 参见 self::ol, 其中设置了tag元素后直接调用 static::ul
         $tag = ArrayHelper::remove($options, 'tag', 'ul');
         $encode = ArrayHelper::remove($options, 'encode', true);
         $formatter = ArrayHelper::remove($options, 'item');
@@ -1468,7 +1469,7 @@ class BaseHtml
         return static::radio($name, $checked, $options);
     }
 
-    /**
+    /**到此
      * Generates a checkbox tag together with a label for the given model attribute.
      * This method will generate the "checked" tag attribute according to the model attribute value.
      * @param Model $model the model object
