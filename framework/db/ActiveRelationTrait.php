@@ -70,6 +70,8 @@ trait ActiveRelationTrait
     {
         parent::__clone();
         // make a clone of "via" object so that the same query object can be reused multiple times
+        // http://php.net/manual/en/language.oop5.cloning.php
+        // 此时的$this代表一个已经被clone出来的对象,默认是 shallow copy,因此这里需要clone $this->via进行额外处理
         if (is_object($this->via)) {
             $this->via = clone $this->via;
         } elseif (is_array($this->via)) {
@@ -79,7 +81,7 @@ trait ActiveRelationTrait
 
     /**
      * Specifies the relation associated with the junction table.
-     *
+     * pivot n. 枢轴；中心点
      * Use this method to specify a pivot record/table when declaring a relation in the [[ActiveRecord]] class:
      *
      * ```php

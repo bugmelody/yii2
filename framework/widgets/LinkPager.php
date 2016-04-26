@@ -154,23 +154,29 @@ class LinkPager extends Widget
     {
         $pageCount = $this->pagination->getPageCount();
         if ($pageCount < 2 && $this->hideOnSinglePage) {
+            // 总页数小于2并且设置了单页隐藏pager
             return '';
         }
 
         $buttons = [];
+        // pagination->getPage(): Returns the zero-based current page number
         $currentPage = $this->pagination->getPage();
 
         // first page
         $firstPageLabel = $this->firstPageLabel === true ? '1' : $this->firstPageLabel;
         if ($firstPageLabel !== false) {
+            // $currentPage <= 0 说明: 当前已经是第一页,first_button 应该是disable状态
             $buttons[] = $this->renderPageButton($firstPageLabel, 0, $this->firstPageCssClass, $currentPage <= 0, false);
         }
 
         // prev page
         if ($this->prevPageLabel !== false) {
+            // $page设置为前一页的页数
             if (($page = $currentPage - 1) < 0) {
+                // 如果前一页页数小于0,也就是当前页是第一页.修正一下
                 $page = 0;
             }
+            // $currentPage <= 0 说明: 当前已经是第一页,prev_button 应该是disable状态
             $buttons[] = $this->renderPageButton($this->prevPageLabel, $page, $this->prevPageCssClass, $currentPage <= 0, false);
         }
 
@@ -182,18 +188,23 @@ class LinkPager extends Widget
 
         // next page
         if ($this->nextPageLabel !== false) {
+            // $page设置为nextPage的页数
             if (($page = $currentPage + 1) >= $pageCount - 1) {
+                // 如果当前页已经是最后一页,修正为最后一夜
                 $page = $pageCount - 1;
             }
+            // $currentPage >= $pageCount - 1 , 说明 当前页已经是最后一页,nextButton应该是disable状态
             $buttons[] = $this->renderPageButton($this->nextPageLabel, $page, $this->nextPageCssClass, $currentPage >= $pageCount - 1, false);
         }
 
         // last page
         $lastPageLabel = $this->lastPageLabel === true ? $pageCount : $this->lastPageLabel;
         if ($lastPageLabel !== false) {
+            // $currentPage >= $pageCount - 1 , 说明 当前页已经是最后一页,lastButton应该是disable状态
             $buttons[] = $this->renderPageButton($lastPageLabel, $pageCount - 1, $this->lastPageCssClass, $currentPage >= $pageCount - 1, false);
         }
 
+        // 用ul作为容器进行包装
         return Html::tag('ul', implode("\n", $buttons), $this->options);
     }
 
@@ -229,12 +240,24 @@ class LinkPager extends Widget
      */
     protected function getPageRange()
     {
+        // $currentPage: 当前页,以0为底
         $currentPage = $this->pagination->getPage();
+        // 总页数
         $pageCount = $this->pagination->getPageCount();
 
+        /**
+         * maxButtonCount 代表了最多按钮数
+         * 比如 maxButtonCount=10
+         * 针对 $currentPage - (int) ($this->maxButtonCount / 2)
+         * 当 $currentPage 小于 6, $beginPage 一直为 0
+         * 当 $currentPage 大于等于6, $beginPage 从 0 开始增加
+         */
         $beginPage = max(0, $currentPage - (int) ($this->maxButtonCount / 2));
+
         if (($endPage = $beginPage + $this->maxButtonCount - 1) >= $pageCount) {
+            // $end_page 大于总页数,修正 $end_page 为总页数
             $endPage = $pageCount - 1;
+            // 修正 $beginPage
             $beginPage = max(0, $endPage - $this->maxButtonCount + 1);
         }
 

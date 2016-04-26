@@ -974,7 +974,7 @@ class BaseHtml
         return $hidden . static::tag($tag, $visibleContent, $options);
     }
 
-    /**到此
+    /**
      * Generates a list of radio buttons.
      * A radio button list is like a checkbox list, except that it only allows single selection.
      * @param string $name the name attribute of each radio button.
@@ -1042,7 +1042,7 @@ class BaseHtml
         return $hidden . static::tag($tag, $visibleContent, $options);
     }
 
-    /**
+    /**到此
      * Generates an unordered list.
      * @param array|\Traversable $items the items for generating the list. Each item generates a single list item.
      * Note that items will be automatically HTML encoded if `$options['encode']` is not set or true.
