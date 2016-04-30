@@ -46,6 +46,7 @@ class QueryBuilder extends \yii\db\QueryBuilder
         Schema::TYPE_MONEY => 'NUMBER(19,4)',
     ];
 
+
     /**
      * @inheritdoc
      */
@@ -262,6 +263,7 @@ EOD;
 
     /**
      * @inheritdoc
+     * @since 2.0.8
      */
     public function selectExists($rawSql)
     {
@@ -270,6 +272,7 @@ EOD;
 
     /**
      * @inheritdoc
+     * @since 2.0.8
      */
     public function dropCommentFromColumn($table, $column)
     {
@@ -278,6 +281,7 @@ EOD;
 
     /**
      * @inheritdoc
+     * @since 2.0.8
      */
     public function dropCommentFromTable($table)
     {
