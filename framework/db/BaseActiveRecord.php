@@ -929,7 +929,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface
     public function afterSave($insert, $changedAttributes)
     {
         $this->trigger($insert ? self::EVENT_AFTER_INSERT : self::EVENT_AFTER_UPDATE, new AfterSaveEvent([
-            'changedAttributes' => $changedAttributes
+            'changedAttributes' => $changedAttributes,
         ]));
     }
 

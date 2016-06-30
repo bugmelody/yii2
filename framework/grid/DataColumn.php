@@ -91,7 +91,7 @@ class DataColumn extends Column
      */
     public $sortLinkOptions = [];
     /**
-     * @var string|array|boolean the HTML code representing a filter input (e.g. a text field, a dropdown list)
+     * @var string|array|null|false the HTML code representing a filter input (e.g. a text field, a dropdown list)
      * that is used for this data column. This property is effective only when [[GridView::filterModel]] is set.
      *
      * - If this property is not set, a text field will be generated as the filter input;
@@ -144,11 +144,11 @@ class DataColumn extends Column
                 /* @var $model Model */
                 $model = new $provider->query->modelClass;
                 $label = $model->getAttributeLabel($this->attribute);
-            } else if ($provider instanceof ArrayDataProvider && $provider->modelClass !== null) {
+            } elseif ($provider instanceof ArrayDataProvider && $provider->modelClass !== null) {
                 /* @var $model Model */
                 $model = new $provider->modelClass;
                 $label = $model->getAttributeLabel($this->attribute);
-            } else if ($this->grid->filterModel !== null && $this->grid->filterModel instanceof Model) {
+            } elseif ($this->grid->filterModel !== null && $this->grid->filterModel instanceof Model) {
                 $label = $this->grid->filterModel->getAttributeLabel($this->attribute);
             } else {
                 $models = $provider->getModels();
